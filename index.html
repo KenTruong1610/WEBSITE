@@ -427,6 +427,46 @@
             font-size: 14px;
             opacity: 0.7;
         }
+        /* Thêm vào phần style */
+@media (max-width: 768px) {
+    .profile-section {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .profile-pic {
+        margin-right: 0;
+        margin-bottom: 20px;
+    }
+    
+    .stats {
+        justify-content: center;
+    }
+    
+    .gallery {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    }
+    
+    .modal-content {
+        width: 95%;
+    }
+}
+
+@media (max-width: 480px) {
+    .header {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .gallery {
+        grid-template-columns: 1fr;
+    }
+    
+    .gallery-image {
+        height: 150px;
+    }
+}
     </style>
 </head>
 <body>
@@ -528,13 +568,13 @@
             {
                 id: 3,
                 title: "Phụ San Báo Nhân Dân",
-                description: "Đi lấy phụ san Báo Nhân Dân nhân 50 năm Ngày Giải phóng miền Nam, thống nhất đát nướ",
+                description: "Đi lấy phụ san Báo Nhân Dân nhân 50 năm Ngày Giải phóng miền Nam, thống nhất đát nước.",
                 imageUrl: "3.jpg"
             },
             {
                 id: 4,
                 title: "Mưa",
-                description: "Ước nhưng có cảnh đẹp.",
+                description: "Ướt nhưng có cảnh đẹp.",
                 imageUrl: "4.jpg"
             }
         ];
