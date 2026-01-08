@@ -16,9 +16,12 @@
         body {
             background-color: #f5f5f5;
             color: #333;
-            /*display: flex;*/
             flex-direction: column;
             min-height: 100vh;
+            -webkit-user-select: none; /* Chống chọn text */
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
         
         .container {
@@ -138,6 +141,7 @@
             padding: 20px;
             border-radius: 5px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: relative;
         }
         
         .profile-pic {
@@ -147,6 +151,24 @@
             object-fit: cover;
             margin-right: 20px;
             border: 3px solid #3498db;
+            -webkit-user-drag: none; /* Chống kéo ảnh */
+            user-drag: none;
+            pointer-events: none; /* Không cho tương tác trực tiếp */
+        }
+        
+        .profile-pic-container {
+            position: relative;
+        }
+        
+        .profile-pic-container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            z-index: 2;
         }
         
         .profile-info {
@@ -198,16 +220,37 @@
             overflow: hidden;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             transition: transform 0.3s;
+            position: relative;
         }
         
         .gallery-item:hover {
             transform: translateY(-5px);
         }
         
-        .gallery-image {
+        .gallery-image-container {
+            position: relative;
             width: 100%;
             height: 200px;
+            overflow: hidden;
+        }
+        
+        .gallery-image {
+            width: 100%;
+            height: 100%;
             object-fit: cover;
+            -webkit-user-drag: none;
+            user-drag: none;
+            pointer-events: none; /* Không cho click trực tiếp */
+        }
+        
+        .image-protection-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            z-index: 1;
             cursor: pointer;
         }
         
@@ -262,6 +305,7 @@
             display: flex;
             flex-direction: column;
             max-height: 90vh;
+            position: relative;
         }
         
         .modal-image-container {
@@ -271,12 +315,26 @@
             align-items: center;
             background-color: #f1f1f1;
             padding: 20px;
+            position: relative;
         }
         
         .modal-image {
             max-width: 100%;
             max-height: 60vh;
             object-fit: contain;
+            -webkit-user-drag: none;
+            user-drag: none;
+            pointer-events: none;
+        }
+        
+        .modal-image-protection {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            z-index: 2;
         }
         
         .modal-info {
@@ -311,10 +369,29 @@
             justify-content: center;
             align-items: center;
             transition: background-color 0.3s;
+            z-index: 1001;
         }
         
         .modal-close:hover {
             background-color: rgba(0,0,0,0.7);
+        }
+        
+        /* Watermark trong modal */
+        .modal-watermark {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(52, 152, 219, 0.05) 10px,
+                rgba(52, 152, 219, 0.05) 20px
+            );
+            pointer-events: none;
+            z-index: 1;
         }
         
         /* Footer Styles */
@@ -427,77 +504,106 @@
             font-size: 14px;
             opacity: 0.7;
         }
+        
+        /* Thông báo khi cố tải ảnh */
+        .download-warning {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px 30px;
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            z-index: 2000;
+            text-align: center;
+            border-left: 4px solid #e74c3c;
+        }
+        
+        .download-warning h3 {
+            color: #e74c3c;
+            margin-bottom: 10px;
+        }
+        
         /* Responsive chỉnh cho tablet và điện thoại */
         @media (max-width: 992px) {
             .search-bar {
-            margin: 15px -10px; /* đẩy ra 10px hai bên */
+                margin: 15px -10px;
             }
             .header {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 15px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
             }
             .social-links {
-            gap: 15px;
+                gap: 15px;
             }
             .stats {
-            flex-wrap: wrap;
-            gap: 10px;
+                flex-wrap: wrap;
+                gap: 10px;
             }
             .stat-item {
-            margin-right: 20px;
+                margin-right: 20px;
             }
             .footer-container {
-            flex-direction: column;
-            gap: 20px;
+                flex-direction: column;
+                gap: 20px;
             }
         }
 
         @media (max-width: 600px) {
             .header-title {
-            font-size: 22px;
+                font-size: 22px;
             }
             .social-links {
-            gap: 10px;
+                gap: 10px;
             }
             .profile-section {
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
             }
             .profile-pic {
-            margin: 0 0 15px 0;
+                margin: 0 0 15px 0;
             }
             .stats {
-            justify-content: center;
+                justify-content: center;
             }
             .gallery {
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 10px;
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 10px;
             }
             .footer-section h3 {
-            font-size: 18px;
+                font-size: 18px;
             }
             .footer-social-links {
-            justify-content: center;
+                justify-content: center;
             }
             .footer-social-link {
-            width: 40px;
-            height: 40px;
-            font-size: 18px;
+                width: 40px;
+                height: 40px;
+                font-size: 18px;
             }
         }
 
     </style>
 </head>
 <body>
+    <!-- Thông báo khi cố tải ảnh -->
+    <div id="downloadWarning" class="download-warning">
+        <h3><i class="fas fa-exclamation-triangle"></i> Hành vi không được phép</h3>
+        <p>Ảnh trên HATIMEDIA được bảo vệ bản quyền.<br>Vui lòng không tải xuống hoặc sao chép trái phép.</p>
+        <button id="closeWarning" style="margin-top: 10px; padding: 8px 15px; background: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer;">Đã hiểu</button>
+    </div>
+    
     <div class="container">
         <div class="header">
             <h1 class="header-title">HATIMEDIA</h1>
             <div class="social-links">
-                <a class="nav-link nav-social" href="https://github.com/KenTruong1610" title="GitHub" target="_blank" rel="noopener noreferrer"><i class="fab fa-github" aria-hidden="true"></i></a>
-                <a class="nav-link nav-social" href="https://www.linkedin.com/in/545772291/" title="LinkedIn" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin" aria-hidden="true"></i></a>
-                <a class="nav-link nav-social" href="https://www.facebook.com/viettung.truongthanh/" title="Facebook" target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook" aria-hidden="true"></i></a>
+                <a class="nav-link nav-social" href="https://github.com/KenTruong1610" title="GitHub" target="_blank" ref = "noreferrer noopener nofollow"><i class="fab fa-github" aria-hidden="true"></i></a>
+                <a class="nav-link nav-social" href="https://www.linkedin.com/in/545772291/" title="LinkedIn" target="_blank" ref = "noreferrer noopener nofollow"><i class="fab fa-linkedin" aria-hidden="true"></i></a>
+                <a class="nav-link nav-social" href="https://www.facebook.com/viettung.truongthanh/" title="Facebook" target="_blank" ref = "noreferrer noopener nofollow"><i class="fab fa-facebook" aria-hidden="true"></i></a>
             </div>
         </div>
         
@@ -509,7 +615,9 @@
         <div class="divider"></div>
         
         <div class="profile-section">
-            <img src="image/3.jpg" alt="Profile Picture" class="profile-pic">
+            <div class="profile-pic-container">
+                <img src="image/3.jpg" alt="Profile Picture" class="profile-pic">
+            </div>
             <div class="profile-info">
                 <h2 class="profile-name">Trương Thanh Việt Tùng</h2>
                 <p class="profile-bio">FREELANCE FRONT-END | SINH VIÊN NĂM 3 IT UEH</p>
@@ -530,13 +638,18 @@
     <div class="modal" id="imageModal">
         <span class="modal-close">&times;</span>
         <div class="modal-content">
+            <div class="modal-watermark"></div>
             <div class="modal-image-container">
+                <div class="modal-image-protection"></div>
                 <img id="modalImage" src="" alt="" class="modal-image">
             </div>
             <div class="modal-info">
                 <h3 id="modalTitle" class="modal-title">Tiêu đề ảnh</h3>
                 <p id="modalDescription" class="modal-description">
                     Đây là mô tả chi tiết về bức ảnh.
+                </p>
+                <p style="color: #e74c3c; font-style: italic; font-size: 14px; margin-top: 10px;">
+                    <i class="fas fa-lock"></i> Ảnh được bảo vệ bản quyền. Không được phép tải xuống.
                 </p>
             </div>
         </div>
@@ -556,18 +669,21 @@
                 <h3>VỀ HATIMEDIA</h3>
                 <div class="developer-info">
                     <p>HATIMEDIA là nơi để phát triển kỹ năng và học hỏi thông qua code.</p>
+                    <p style="margin-top: 10px; color: rgba(255,255,255,0.7);">
+                        <i class="fas fa-shield-alt"></i> Tất cả hình ảnh được bảo vệ bản quyền.
+                    </p>
                 </div>
                 
                 <div class="footer-social-links">
-                    <a class="footer-social-link" href="https://github.com/KenTruong1610" title="GitHub" target="_blank" rel="noopener noreferrer"><i class="fab fa-github" aria-hidden="true"></i></a>
-                    <a class="footer-social-link" href="https://www.linkedin.com/in/545772291/" title="LinkedIn" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin" aria-hidden="true"></i></a>
-                    <a class="footer-social-link" href="https://www.facebook.com/viettung.truongthanh/" title="Facebook" target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook" aria-hidden="true"></i></a>
+                    <a class="footer-social-link" href="https://github.com/KenTruong1610" title="GitHub" target="_blank" ref = "noreferrer noopener nofollow"><i class="fab fa-github" aria-hidden="true"></i></a>
+                    <a class="footer-social-link" href="https://www.linkedin.com/in/545772291/" title="LinkedIn" target="_blank" ref = "noreferrer noopener nofollow"><i class="fab fa-linkedin" aria-hidden="true"></i></a>
+                    <a class="footer-social-link" href="https://www.facebook.com/viettung.truongthanh/" title="Facebook" target="_blank" ref = "noreferrer noopener nofollow"><i class="fab fa-facebook" aria-hidden="true"></i></a>
                 </div>
             </div>
         </div>
         
         <div class="copyright">
-            2025 HATIMEDIA
+            2025 HATIMEDIA | Bảo vệ bản quyền hình ảnh
         </div>
     </footer>
 
@@ -730,7 +846,10 @@
                 galleryItem.dataset.id = item.id;
                 
                 galleryItem.innerHTML = `
-                    <img src="${item.imageUrl}" alt="${item.title}" class="gallery-image">
+                    <div class="gallery-image-container">
+                        <div class="image-protection-overlay"></div>
+                        <img src="${item.imageUrl}" alt="${item.title}" class="gallery-image">
+                    </div>
                     <div class="gallery-info">
                         <h3 class="gallery-title">${item.title}</h3>
                         <div class="gallery-actions">
@@ -749,11 +868,89 @@
             initEventListeners();
         }
 
+        // Hiển thị cảnh báo
+        function showDownloadWarning() {
+            const warning = document.getElementById('downloadWarning');
+            warning.style.display = 'block';
+            setTimeout(() => {
+                warning.style.opacity = '1';
+                warning.style.transform = 'translate(-50%, -50%) scale(1)';
+            }, 10);
+            
+            // Tự động ẩn sau 3 giây
+            setTimeout(() => {
+                hideDownloadWarning();
+            }, 3000);
+        }
+
+        // Ẩn cảnh báo
+        function hideDownloadWarning() {
+            const warning = document.getElementById('downloadWarning');
+            warning.style.opacity = '0';
+            warning.style.transform = 'translate(-50%, -50%) scale(0.9)';
+            setTimeout(() => {
+                warning.style.display = 'none';
+            }, 300);
+        }
+
         // Initialize event listeners
         function initEventListeners() {
+            // Hiển thị cảnh báo khi cố tải ảnh
+            const closeWarningBtn = document.getElementById('closeWarning');
+            closeWarningBtn.addEventListener('click', hideDownloadWarning);
+            
+            // 1. NGĂN CHUỘT PHẢI TRÊN TOÀN TRANG
+            document.addEventListener('contextmenu', function(e) {
+                if (e.target.tagName === 'IMG' || 
+                    e.target.classList.contains('gallery-image-container') ||
+                    e.target.classList.contains('modal-image-container')) {
+                    e.preventDefault();
+                    showDownloadWarning();
+                    return false;
+                }
+            });
+            
+            // 2. NGĂN KÉO THẢ ẢNH
+            document.addEventListener('dragstart', function(e) {
+                if (e.target.tagName === 'IMG') {
+                    e.preventDefault();
+                    showDownloadWarning();
+                    return false;
+                }
+            });
+            
+            // 3. NGĂN PHÍM TẮT
+            document.addEventListener('keydown', function(e) {
+                // Ngăn Print Screen
+                if (e.key === 'PrintScreen') {
+                    e.preventDefault();
+                    showDownloadWarning();
+                    return false;
+                }
+                
+                // Ngăn Ctrl+S (Save), Ctrl+P (Print), Ctrl+Shift+I (DevTools)
+                if ((e.ctrlKey && e.key === 's') || 
+                    (e.ctrlKey && e.key === 'p') ||
+                    (e.ctrlKey && e.shiftKey && e.key === 'I') ||
+                    e.key === 'F12') {
+                    e.preventDefault();
+                    showDownloadWarning();
+                    return false;
+                }
+            });
+            
+            // 4. NGĂN COPY
+            document.addEventListener('copy', function(e) {
+                if (window.getSelection().toString().includes('HATIMEDIA') || 
+                    e.target.tagName === 'IMG') {
+                    e.preventDefault();
+                    showDownloadWarning();
+                    return false;
+                }
+            });
+
             // Image viewer functionality
             const viewButtons = document.querySelectorAll('.view-btn');
-            const galleryImages = document.querySelectorAll('.gallery-image');
             const modal = document.getElementById('imageModal');
             const modalImage = document.getElementById('modalImage');
             const modalTitle = document.getElementById('modalTitle');
@@ -763,40 +960,55 @@
             // Track which image is currently being viewed
             let currentImageId = null;
             
-            // Open modal with clicked image (from view button)
-            viewButtons.forEach(button => {
-                button.addEventListener('click', (e) => {
+            // Mở modal khi click vào overlay (thay vì ảnh trực tiếp)
+            document.querySelectorAll('.image-protection-overlay').forEach(overlay => {
+                overlay.addEventListener('click', (e) => {
                     const galleryItem = e.target.closest('.gallery-item');
                     currentImageId = galleryItem.dataset.id;
-                    const image = galleryItem.querySelector('.gallery-image');
                     const itemData = galleryData.find(item => item.id == currentImageId);
                     
-                    // Set modal content
-                    modalImage.src = image.src;
+                    // Đặt nội dung modal
+                    modalImage.src = itemData.imageUrl;
                     modalTitle.textContent = itemData.title;
                     modalDescription.textContent = itemData.description;
                     
                     modal.style.display = 'flex';
-                    document.body.style.overflow = 'hidden'; // Prevent scrolling
+                    document.body.style.overflow = 'hidden';
+                    
+                    // Ngăn chặn các hành vi tải ảnh trong modal
+                    const modalImageProtection = document.querySelector('.modal-image-protection');
+                    modalImageProtection.addEventListener('contextmenu', function(e) {
+                        e.preventDefault();
+                        showDownloadWarning();
+                        return false;
+                    });
                 });
             });
             
-            // Also allow opening by clicking the image directly
-            galleryImages.forEach(image => {
-                image.addEventListener('click', (e) => {
+            // Cũng cho phép mở modal bằng nút "Xem chi tiết"
+            viewButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
                     const galleryItem = e.target.closest('.gallery-item');
-                    const viewBtn = galleryItem.querySelector('.view-btn');
-                    viewBtn.click(); // Trigger the view button click
+                    currentImageId = galleryItem.dataset.id;
+                    const itemData = galleryData.find(item => item.id == currentImageId);
+                    
+                    // Đặt nội dung modal
+                    modalImage.src = itemData.imageUrl;
+                    modalTitle.textContent = itemData.title;
+                    modalDescription.textContent = itemData.description;
+                    
+                    modal.style.display = 'flex';
+                    document.body.style.overflow = 'hidden';
                 });
             });
             
-            // Close modal
+            // Đóng modal
             modalClose.addEventListener('click', () => {
                 modal.style.display = 'none';
-                document.body.style.overflow = 'auto'; // Re-enable scrolling
+                document.body.style.overflow = 'auto';
             });
             
-            // Close modal when clicking outside the content
+            // Đóng modal khi click bên ngoài nội dung
             modal.addEventListener('click', (e) => {
                 if (e.target === modal) {
                     modal.style.display = 'none';
@@ -804,7 +1016,7 @@
                 }
             });
 
-            // Search functionality
+            // Chức năng tìm kiếm
             const searchInput = document.querySelector('.search-bar input');
             const searchButton = document.querySelector('.search-bar button');
             const galleryItems = document.querySelectorAll('.gallery-item');
@@ -823,10 +1035,10 @@
                 });
             }
 
-            // Search button click event
+            // Sự kiện click nút tìm kiếm
             searchButton.addEventListener('click', performSearch);
             
-            // Enter key press event in search input
+            // Sự kiện nhấn Enter trong ô tìm kiếm
             searchInput.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') {
                     performSearch();
